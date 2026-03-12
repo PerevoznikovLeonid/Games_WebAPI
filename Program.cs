@@ -1,4 +1,3 @@
-using System.Text.Json;
 using GamesWebAPI;
 
 var competitions = StorageManager.ReadFromFile<Competition>("competitions.json").ToList();
@@ -213,5 +212,6 @@ apiResults.MapPut("/{id:guid}", (Guid id, Result result) =>
     .Produces(StatusCodes.Status410Gone)
     .Produces(StatusCodes.Status200OK)
     .WithName("EditAResult");
+
 
 app.Run();
