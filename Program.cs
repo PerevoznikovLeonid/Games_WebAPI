@@ -59,18 +59,23 @@ apiCompetitions.MapGet("/{id:guid}", (Guid id) =>
 
 apiCompetitions.MapGet("/{id:guid}/results", (Guid id) =>
     {
-        var resultSearch = results.FindEntity(id);
-        if (resultSearch.Error != null)
-            return resultSearch.Error;
-        
-        var competitionSearch = competitions.FindEntity(resultSearch.Entity!.Id);
+        var competitionSearch = competitions.FindEntity(id);
         if (competitionSearch.Error != null)
             return competitionSearch.Error;
         
-        return Results.Ok(competitionSearch.Entity);
+        var resultSearch = results.SingleOrDefault(s => s.CompetitionId == competitionSearch.Entity!.Id);
+        if (resultSearch == null)
+            return Results.NotFound("Result not found");
+        if (resultSearch.IsDeleted)
+        {
+            return Results.StatusCode(410);
+        }
+
+        return Results.Ok(resultSearch);
     })
-    .WithDescription("Get a single competition by result id")
+    .WithDescription("Get a single result by competition id")
     .Produces(StatusCodes.Status404NotFound)
+    .Produces(StatusCodes.Status410Gone)
     .Produces<Competition[]>();
 
 apiCompetitions.MapPost("/", (Competition competition) =>
@@ -175,6 +180,7 @@ apiResults.MapPost("/", (Result result) =>
     })
     .WithName("Create a new result.")
     .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status500InternalServerError)
     .Produces(StatusCodes.Status201Created);
 
 apiResults.MapDelete("/{id:guid}", (Guid id) =>

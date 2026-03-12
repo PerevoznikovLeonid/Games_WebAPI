@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+
 namespace GamesWebAPI;
 
 public static class EntityEndpointHelper
@@ -14,11 +16,7 @@ public static class EntityEndpointHelper
             
         if (item.IsDeleted)
         {
-            var goneResult = Results.Json(new
-            {
-                StatusCode = 410,
-                Message = $"{entityName} is deleted"
-            });
+            var goneResult = Results.StatusCode(410);
             
             return new SearchResult<T>(goneResult, default);
         }

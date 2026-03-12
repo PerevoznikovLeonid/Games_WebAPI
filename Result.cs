@@ -2,7 +2,7 @@ namespace GamesWebAPI;
 
 public class Result: IEntity
 {
-    public Guid Id { get; } = Guid.CreateVersion7();
+    public Guid Id { get; set; } = Guid.CreateVersion7();
     public required Guid CompetitionId { get; set; }
     public required string ParticipantName { get; set; }
     public required int Place
